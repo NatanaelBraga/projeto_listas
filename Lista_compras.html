@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Compras</title>
+  <style>
+    :root {
+      --background-color: #fff;
+      --text-color: #333;
+      --input-background-color: #f2f2f2;
+      --button-background-color: #4CAF50;
+      --button-text-color: #fff;
+    }
+
+    .dark {
+      --background-color: #333;
+      --text-color: #fff;
+      --input-background-color: #444;
+      --button-background-color: #555;
+      --button-text-color: #fff;
+    }
+
+    body {
+      background-color: var(--background-color);
+      color: var(--text-color);
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-top: 0;
+    }
+
+    .form {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .form input,
+    .form button {
+      margin: 5px;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .form input {
+      flex-grow: 1;
+      background-color: var(--input-background-color);
+    }
+
+    .form button {
+      background-color: var(--button-background-color);
+      color: var(--button-text-color);
+      cursor: pointer;
+    }
+
+    .list {
+      margin-bottom: 20px;
+    }
+
+    .product {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .product button {
+      background-color: transparent;
+      color: red;
+      border: none;
+      cursor: pointer;
+    }
+
+    .total {
+      font-weight: bold;
+    }
+
+    .dark .product {
+      background-color: #444;
+      color: #fff;
+    }
+
+    .dark .product button {
+      color: #fff;
+    }
+
+    .dark .total {
+      color: #fff;
+    }
+
+    .theme-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px;
+      border-radius: 50%;
+      font-size: 24px;
+      background-color: var(--button-background-color);
+      color: var(--button-text-color);
+      cursor: pointer;
+    }
+
+    .dark .theme-btn {
+      background-color: #555;
+    }
+
+    .export-btn,
+    .share-btn {
+      margin-right: 10px;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      background-color: var(--button-background-color);
+      color: var(--button-text-color);
+      cursor: pointer;
+    }
+
+    .dark .export-btn,
+    .dark .share-btn {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Lista de compras</h1>
+    <form class="form">
+<label for="product-input">Produto:</label>
+<input type="text" id="product-input" placeholder="Digite o nome do produto">
+  <label for="quantity-input">Quantidade:</label>
+  <input type="number" id="quantity-input" placeholder="Digite a quantidade">
+
+  <label for="price-input">Preço:</label>
+  <input type="number" id="price-input" step="0.01" placeholder="Digite o preço">
+
+  <button id="add-btn">Adicionar</button>
+</form>
+
+<div class="list">
+  <div class="product-header">
+    <div>Produto</div>
+    <div>Quantidade</div>
+    <div>Preço</div>
+    <div>Ações</div>
+  </div>
+  <div id="product-list"></div>
+  <div class="total">Total: R$ 0,00</div>
+</div>
+
+<div class="buttons">
+  <button id="export-btn" class="export-btn">Exportar para Excel</button>
+  <button id="share-btn" class="share-btn">Compartilhar por WhatsApp</button>
+  <button id="theme-btn" class="theme-btn">🌙</button>
+</div>
+  </div>
+  <script>
+    const productListEl = document.getElementById('product-list');
+    const productInputEl = document.getElementById('product-input');
+    const quantityInputEl = document.getElementById('quantity-input');
+    const priceInputEl = document.getElementById('price-input');
+    const addBtnEl = document.getElementById('add-btn');
+    const totalEl = document.querySelector('.total');
+    const exportBtnEl = document.getElementById('export-btn');
+    const shareBtnEl = document.getElementById('share-btn');
+    const themeBtnEl = document.getElementById('theme-btn');
+    const bodyEl = document.body;
+
+    let productList = [];
+
+    // Função para atualizar a lista de produtos
+    function updateProductList() {
+      productListEl.innerHTML = '';
+      let total = 0;
+
+      productList.forEach((product, index) => {
+        const productEl = document.createElement('div');
+        productEl.classList.add('product');
+
+        const nameEl = document.createElement('div');
+        nameEl.innerText = product.name;
+
+        const quantityEl = document.createElement('div');
+        quantityEl.innerText = product.quantity;
+
+        const priceEl = document.createElement('div');
+        priceEl.innerText = `R$ ${product.price.toFixed(2)}`;
+
+        const removeBtnEl = document.createElement('button');
+        removeBtnEl.innerText = 'Remover';
+        removeBtnEl.addEventListener('click', () => {
+          productList.splice(index, 1);
+          updateProductList();
+        });
+
+        productEl.appendChild(nameEl);
+        productEl.appendChild(quantityEl);
+        productEl.appendChild(priceEl);
+        productEl.appendChild(removeBtnEl);
+
+        productListEl.appendChild(productEl);
+
+        total += product.quantity * product.price;
+      });
+
+      totalEl.innerText = `Total: R$ ${total.toFixed(2)}`;
+    }
+
+    // Adicionar novo produto à lista
+    addBtnEl.addEventListener('click', (event) => {
+      event.preventDefault();
+
+      const name = productInputEl.value;
+      const quantity = Number(quantityInputEl.value);
+      const price = Number(priceInputEl.value);
+
+      if (name && quantity && price) {
+        const product = { name, quantity, price };
+        productList.push(product);
+
+        productInputEl.value = '';
+        quantityInputEl.value = '';
+        priceInputEl.value = '';
+
+        updateProductList();
+      }
+    });
+
+    // Exportar lista para Excel
+    exportBtnEl.addEventListener('click', () => {
+const filename = 'lista-de-compras.xlsx';
+const worksheetName = 'Lista de compras';
+  const workbook = XLSX.utils.book_new();
+  const worksheet = XLSX.utils.json_to_sheet(productList);
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, worksheetName);
+  XLSX.writeFile(workbook, filename);
+});
+
+// Compartilhar lista por WhatsApp
+shareBtnEl.addEventListener('click', () => {
+  const message = `Minha lista de compras:\n\n${productList.map(p => `${p.name} (${p.quantity} x R$ ${p.price.toFixed(2)})`).join('\n')}\n\nTotal: R$ ${totalEl.innerText.replace('Total: R$ ', '')}`;
+  const whatsappURL = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  window.open(whatsappURL, '_blank');
+});
+
+// Mudar tema da página
+let isDarkMode = false;
+
+themeBtnEl.addEventListener('click', () => {
+  isDarkMode = !isDarkMode;
+
+  if (isDarkMode) {
+    bodyEl.classList.add('dark');
+    themeBtnEl.innerText = '☀️';
+  } else {
+    bodyEl.classList.remove('dark');
+    themeBtnEl.innerText = '🌙';
+  }
+});
+
+  </script>
+</body>
+</html>

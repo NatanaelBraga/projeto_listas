@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Tarefas</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #fff;
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      margin-top: 0;
+    }
+    
+    form {
+      display: flex;
+      margin-bottom: 1rem;
+    }
+    
+    input[type="text"] {
+      flex: 1;
+      padding: 0.5rem;
+      font-size: 1.2rem;
+      border: none;
+      border-bottom: 2px solid #ccc;
+    }
+    
+    button[type="submit"] {
+      padding: 0.5rem 1rem;
+      font-size: 1.2rem;
+      background-color: #008cba;
+      color: #fff;
+      border: none;
+      border-radius: 2px;
+      margin-left: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    button[type="submit"]:hover {
+      background-color: #006d9c;
+    }
+    
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    
+    li {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem;
+      font-size: 1.2rem;
+      border-bottom: 2px solid #ccc;
+      transition: background-color 0.3s;
+    }
+    
+    li:last-of-type {
+      border-bottom: none;
+    }
+    
+    li.completed {
+      text-decoration: line-through;
+      color: #777;
+    }
+    
+    li button {
+      margin-left: auto;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.3s;
+      margin-right: 1rem;
+    }
+    
+    li button:hover {
+      transform: scale(1.2);
+    }
+    
+    #clearCompleted {
+      display: block;
+      margin: 1rem 0;
+      background-color: #e74c3c;
+      color: #fff;
+      border: none;
+      border-radius: 2px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    #clearCompleted:hover {
+      background-color: #c0392b;
+    }
+
+    #darkModeButton {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background-color: #008cba;
+      color: #fff;
+      border: none;
+      border-radius: 2px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    #darkModeButton:hover {
+      background-color: #006d9c;
+    }
+
+    /* Estilos para modo escuro */
+    body.dark-mode {
+      background-color: #333;
+      color: #fff;
+    }
+    
+    body.dark-mode button[type="submit"] {
+      background-color: #006d9c;
+    }
+
+    body.dark-mode #clear
+Completed {
+background-color: #c0392b;
+}
+body.dark-mode li {
+  border-bottom-color: #555;
+  color: #ccc;
+}
+
+body.dark-mode li.completed {
+  color: #999;
+}
+
+body.dark-mode #clearCompleted {
+  background-color: #c0392b;
+}
+
+body.dark-mode #darkModeButton {
+  background-color: #006d9c;
+}
+</style>
+</head>
+<body>
+  <h1>Lista de Tarefas</h1>
+  <form id="todoForm">
+    <input type="text" id="todoInput" placeholder="Adicionar tarefa...">
+    <button type="submit">Adicionar</button>
+  </form>
+  <ul id="todoList"></ul>
+  <button id="clearCompleted">Excluir Concluídas</button>
+  <button id="darkModeButton">Modo Escuro</button>
+  <script>
+    const todoForm = document.getElementById('todoForm');
+    const todoInput = document.getElementById('todoInput');
+    const todoList = document.getElementById('todoList');
+    const clearCompleted = document.getElementById('clearCompleted');
+    const darkModeButton = document.getElementById('darkModeButton');
+    let todos = [];
+
+    function renderTodos() {
+      todoList.innerHTML = '';
+      for (let i = 0; i < todos.length; i++) {
+        const todo = todos[i];
+        const li = document.createElement('li');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = todo.completed;
+        checkbox.addEventListener('change', function () {
+          todo.completed = !todo.completed;
+          renderTodos();
+        });
+        const span = document.createElement('span');
+        span.innerText = todo.text;
+        if (todo.completed) {
+          li.classList.add('completed');
+        }
+        const button = document.createElement('button');
+        button.innerText = 'Excluir';
+        button.addEventListener('click', function () {
+          todos.splice(i, 1);
+          renderTodos();
+        });
+        li.appendChild(checkbox);
+        li.appendChild(span);
+        li.appendChild(button);
+        todoList.appendChild(li);
+      }
+    }
+
+    function addTodo() {
+      const text = todoInput.value.trim();
+      if (text !== '') {
+        todos.push({ text, completed: false });
+        renderTodos();
+        todoInput.value = '';
+      }
+    }
+
+    function clearCompletedTodos() {
+      todos = todos.filter(todo => !todo.completed);
+      renderTodos();
+    }
+
+    todoForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+      addTodo();
+    });
+
+    clearCompleted.addEventListener('click', function () {
+      clearCompletedTodos();
+    });
+
+    darkModeButton.addEventListener('click', function () {
+      document.body.classList.toggle('dark-mode');
+    });
+  </script>
+</body>
+</html>

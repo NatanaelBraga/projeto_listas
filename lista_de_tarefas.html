@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Tarefas</title>
+</head>
+<body>
+  <h1>Lista de Tarefas</h1>
+  
+  <form id="form">
+    <input type="text" id="taskInput">
+    <button type="submit">Adicionar Tarefa</button>
+  </form>
+
+  <ul id="taskList"></ul>
+
+  <button id="clearCompleted">Limpar Tarefas Concluídas</button>
+
+  <script>
+    // seleciona os elementos HTML que precisamos manipular
+    const form = document.getElementById('form');
+    const taskInput = document.getElementById('taskInput');
+    const taskList = document.getElementById('taskList');
+    const clearCompleted = document.getElementById('clearCompleted');
+
+    // array para armazenar as tarefas
+    let tasks = [];
+
+    // função para adicionar uma nova tarefa
+    function addTask(event) {
+      // impede o comportamento padrão do formulário
+      event.preventDefault();
+      // obtém o valor do input
+      const taskName = taskInput.value.trim();
+      // se o input estiver vazio, não faz nada
+      if (!taskName) return;
+      // cria um objeto de tarefa com o nome da tarefa e um ID único
+      const task = {
+        id: Date.now(),
+        name: taskName,
+        completed: false
+      };
+      // adiciona a tarefa ao array de tarefas
+      tasks.push(task);
+      // atualiza a lista de tarefas
+      renderTasks();
+      // limpa o input
+      taskInput.value = '';
+      // define o foco novamente no input
+      taskInput.focus();
+    }
+
+    // função para renderizar a lista de tarefas
+    function renderTasks() {
+      // limpa a lista de tarefas
+      taskList.innerHTML = '';
+      // itera sobre as tarefas e cria um elemento de lista para cada uma
+      tasks.forEach((task) => {
+        const li = document.createElement('li');
+        li.innerText = task.name;
+        // adiciona uma classe 'completed' se a tarefa estiver concluída
+        if (task.completed) {
+          li.classList.add('completed');
+        }
+        // adiciona um evento de clique para marcar a tarefa como concluída ou não concluída
+        li.addEventListener('click', () => {
+          task.completed = !task.completed;
+          renderTasks();
+        });
+        // adiciona o elemento de lista à lista de tarefas
+        taskList.appendChild(li);
+      });
+    }
+
+    // função para limpar as tarefas concluídas
+    function clearCompletedTasks() {
+      // filtra as tarefas para obter apenas as tarefas não concluídas
+      tasks = tasks.filter((task) => !task.completed);
+      // atualiza a lista de tarefas
+      renderTasks();
+    }
+
+    // adiciona um evento de clique para adicionar uma nova tarefa quando o formulário for enviado
+    form.addEventListener('submit', addTask);
+    // adiciona um evento de clique para limpar as tarefas concluídas
+    clearCompleted.addEventListener('click', clearCompletedTasks);
+  </script>
+</body>
+</html>
